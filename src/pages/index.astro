@@ -1,0 +1,124 @@
+---
+import Layout from '@layouts/Layout.astro';
+import HeroA from '@components/hero/HeroA.astro';
+import CardA from '@components/cards/CardA.astro';
+import CtaB from '@components/cta/CtaB.astro';
+
+// temporally
+const cards = [
+    { title: "Card 1", subtitle: "Subtitle for card 1" },
+    { title: "Card 2", subtitle: "Subtitle for card 2" },
+    { title: "Card 3", subtitle: "Subtitle for card 3" },
+    { title: "Card 4", subtitle: "Subtitle for card 4" },
+];
+---
+
+<Layout>
+	<HeroA />
+
+	<div class="u--pt-10 u--pt-tablets-7 u--pb-15 u--pb-tablets-10">
+		<div class="f--container">
+			<div class="f--row">
+				<div class="f--col-12 u--text-align-center">
+					<h2 class="f--font-b u--mb-4 ">Tabs section</h2>
+				</div>
+			</div>
+			<div class="f--row">
+				<div class="f--col-8 f--offset-2">
+					<div class="c--accordion-a js--collapsify">
+						<div class="c--accordion-a__item">
+							<button class="c--accordion-a__item__hd"  data-collapsify-control="collapsify-0">
+								tempore nemo sed voluptatibus
+								 <svg class="c--accordion-a__item__hd__artwork"  width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+									 <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								 </svg>
+
+							 </button>
+							<div class="c--accordion-a__item__bd" data-collapsify-content="collapsify-0">
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+							</div>
+						 </div>
+						 <div class="c--accordion-a__item">
+							<button class="c--accordion-a__item__hd"  data-collapsify-control="collapsify-1">
+								Ut enim ad minim veniam
+								<svg class="c--accordion-a__item__hd__artwork"  width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+									 <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								 </svg>
+
+							 </button>
+							<div class="c--accordion-a__item__bd" data-collapsify-content="collapsify-1">
+								<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+							</div>
+						 </div>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="f--container">
+		<div class="f--row">
+			<div class="f--col-4 f--offset-4 u--mb-5">
+				<div class="c--form-group-a">
+					<div class="c--form-select-a">
+						<select id="taxonomy" class="c--form-select-a__item js--taxonomy-select">
+							<option value="">Select a category</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="f--row f--gap-c js--cards-container">
+			{cards.map((card) => (
+				<div class="f--col-6">
+					<CardA title={card.title} subtitle={card.subtitle} />
+				</div>
+			))}
+
+			<div class="f--col-12">
+				<CtaB />
+			</div>
+
+			{cards.map((card) => (
+				<div class="f--col-6">
+					<CardA title={card.title} subtitle={card.subtitle} />
+				</div>
+			))}
+
+		</div>
+
+		<div class="f--row">
+			<div class="f--col-12 u--text-align-center u--mt-5">
+				<button class="c--btn-a js--load-more">Load More</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="u--pt-10">
+		<div class="f--container">
+			<div class="f--row">
+				<div class="f--col-6 f--offset-3">
+					<h3 class="f--font-c u--mb-4">Url Validator</h3>
+					<div class="c--form-input-a">
+						<input class="c--form-input-a__item js--url-input" type="text" placeholder="Enter URL to check redirects..." />
+					</div>
+					<button class="c--btn-a u--mt-4 js--url-submit">Check URL</button>
+					<div class="js--url-result u--mt-4"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+	
+
+	
+
+</Layout>

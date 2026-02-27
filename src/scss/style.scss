@@ -1,0 +1,279 @@
+
+
+@use "sass:map";
+@use './reset/reset.scss';
+
+// variables scss, use it always as map.get($color-options, {letter});
+$color-a: #0f0f0f;
+$color-b: #fefefe;
+$color-c: #f7f8f4;
+
+/* Accent Color */
+$color-d: #7ce55e;
+$color-e: #189b5c;
+$color-f: #3d9dd8;
+$color-g: #ffb41d;
+$color-h: #f96e43;
+$color-i: #f78bd8;
+
+$color-options: (
+    a: $color-a,
+    b: $color-b,
+    c: $color-c,
+    d: $color-d,
+    e: $color-e,
+    f: $color-f,
+    g: $color-g,
+    h: $color-h,
+    i: $color-i,
+);
+
+$colorbg-options: (
+    a: $color-a,
+    b: $color-b,
+    c: $color-c,
+    d: $color-d,
+);
+
+// Measure
+$measure: 0.5rem; /* 0.5rem = 8px */
+
+.roboto {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300 400;
+    font-style: normal;
+  
+}
+
+.f--font-a{
+    font-size:50px;
+}
+
+.f--font-b{
+    font-size: 35px;
+}
+
+.f--font-c{
+    font-size: 25px;
+}
+
+
+
+
+body{
+    overflow:scroll!important;
+    @extend .roboto;
+    color:map.get($color-options, a);
+    line-height: 1.4;;
+}
+
+.c--preloader-a{
+    background-color: map.get($color-options, b);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+
+.c--header-a{
+    position: fixed;
+    top: $measure*2;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    &__wrapper{
+        background-color: map.get($color-options, b);
+        text-align: center;
+        border-radius: 8px;
+        padding:$measure*2 $measure*4;
+    }
+}
+
+.c--page-a{
+    position:relative;
+    &__ft-items{
+        position: relative;
+        z-index: 10;
+    }
+    &__bg-items{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 1;
+    }
+}
+
+.c--hero-a{
+    background-color: map.get($color-options, e);
+    height:60vh;
+    display: flex;
+    width:100%;
+    align-items: center;
+    &__title{
+        @extend .f--font-a;
+        text-align: center;
+        color: map.get($color-options, b);
+    }
+}
+
+
+.c--accordion-a{
+    &__item{
+        &__hd{
+            padding:$measure*2 0;
+            color: map.get($color-options, a);
+            border-bottom:1px solid #fff;
+            display: block;
+            width:100%;
+            text-align: left;
+            position:relative;
+            @extend .f--font-c;
+            &__artwork{
+                position:absolute;
+                right:0;
+                top:0;
+                transform: translateY(25px) scale(1.8) rotate(180deg);
+                pointer-events: none;
+            }
+        }
+    } 
+}
+
+
+.c--btn-a{
+    display: inline-block;
+    background-color: map.get($color-options, d);
+    color: map.get($color-options, b);
+    padding: $measure*2 $measure*4;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+    &:hover{
+        border-radius: 10px;
+        background-color: rgba(map.get($color-options, d), 0.8);
+    }
+}
+
+.c--lottie-a{
+    height:300px;
+    width: 100%;
+}
+
+.c--form-select-a {
+    position:relative;
+    display: flex;
+    flex-wrap: nowrap;
+    column-gap:20px;
+    row-gap:20px;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 0.25em;
+    &::after{
+        content: '';
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid map.get($color-options, a);
+        pointer-events: none;
+        z-index: 30;
+    }
+    &--error{
+      border-color: red;
+      background-color: #ec8f8f;
+    }
+    &--valid{
+      border-color: green;
+      background-color: #e6ffe6;
+    }
+    &__item {
+        background: transparent;
+        -webkit-appearance: none;
+        appearance: none;
+        color: black;
+        width: 100%;
+        font-weight: 400;
+        padding: 10px;
+        padding-right: 30px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+    }
+}
+.c--form-input-a{
+  display: block;
+  width: 100%;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  &--error{
+    border-color: red;
+    background-color: #ffe6e6;
+  }
+  &--valid{
+    border-color: green;
+    background-color: #e6ffe6;
+  }
+  &__item{
+    display: block;
+    width: 100%;
+    border-radius: 0.25em;
+    font-size: 1em;
+    outline: none;
+    appearance: none;
+    background:transparent;
+  }
+}
+
+.c--card-a{
+    background-color: map.get($color-options, c);
+    border-radius: 8px;
+    padding: $measure*4;
+    &__title{
+        @extend .f--font-b;
+        color: map.get($color-options, a);
+        margin-bottom: $measure*2;
+    }
+    &__subtitle{
+        @extend .f--font-c;
+        color: map.get($color-options, a);
+    }
+}
+
+.c--cta-b{
+    background-color: map.get($color-options, e);
+    border-radius: 8px;
+    padding: $measure*6;
+    text-align: center;
+    margin: $measure*4 0;
+    &__title{
+        @extend .f--font-b;
+        color: map.get($color-options, b);
+        margin-bottom: $measure*2;
+    }
+    &__description{
+        @extend .f--font-c;
+        color: map.get($color-options, b);
+        margin-bottom: $measure*4;
+    }
+    &__btn{
+        @extend .c--btn-a;
+        background-color: map.get($color-options, b);
+        color: map.get($color-options, e);
+    }
+}
+
+
