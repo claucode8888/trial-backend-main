@@ -52,7 +52,7 @@ class Project{
     try {
 
       // Preload images and lotties
-      this.preloadImages();
+      await this.preloadImages();
 
       // Simulate another async operation
       await new Promise(resolve => setTimeout(resolve, 2300));
@@ -67,7 +67,7 @@ class Project{
           // //* Check if the animation is at least 50% complete and the function hasn't been executed yet
           if (tl.progress() >= 0.5 && !this.halfwayExecuted) {
             this.halfwayExecuted = true;
-            this.loadMain();
+            await this.loadMain();
           }
         },
       });
