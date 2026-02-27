@@ -71,14 +71,19 @@ class Project{
           }
         },
       });
-      tl.to(this.DOM.preloader,
-        {
-          delay:0.5,
-          opacity:0,
-          duration:0.5,
-          onComplete: () => { this.DOM.preloader.style.display = 'none' }
-        }
-      )
+      if (this.DOM.preloader)
+      {
+        tl.to(
+          this.DOM.preloader,
+          {
+            delay:0.5,
+            opacity:0,
+            duration:0.5,
+            onStart: () => { this.DOM.preloader.style.pointerEvents = 'none' },
+            onComplete: () => { this.DOM.preloader.style.display = 'none' }
+          }
+        )
+      }
     }
   }
 
