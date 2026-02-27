@@ -40,6 +40,7 @@ class Project{
   constructor(){
     this.DOM = {
       images : document.querySelectorAll("img"),
+      preloader : document.querySelector(".c--preloader-a"),
     };
     this.debug = true; // Set to true to enable debug mode
     this.halfwayExecuted = false;
@@ -79,11 +80,13 @@ class Project{
           }
         },
       });
-      tl.to('.c--preloader-a',{
-        delay:0.5,
-        opacity:0,
-        duration:0.5,
-      })
+      tl.to(this.DOM.preloader,
+        {
+          delay:0.5,
+          opacity:0,
+          duration:0.5,
+        }
+      )
     }
   }
 }
