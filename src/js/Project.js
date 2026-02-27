@@ -52,12 +52,7 @@ class Project{
     try {
 
       // Preload images and lotties
-      if(this.DOM.images){
-        const { preloadImages } = await import("@terrahq/helpers/preloadImages");
-        await preloadImages({
-          selector: this.DOM.images,
-        });
-      }
+      this.preloadImages();
 
       // Simulate another async operation
       await new Promise(resolve => setTimeout(resolve, 2300));
@@ -72,11 +67,7 @@ class Project{
           // //* Check if the animation is at least 50% complete and the function hasn't been executed yet
           if (tl.progress() >= 0.5 && !this.halfwayExecuted) {
             this.halfwayExecuted = true;
-            const { default: Main } = await import("@js/Main.js");
-            new Main({
-              boostify: this.boostify,
-              debug: this.terraDebug,
-            });
+            this.loadMain();
           }
         },
       });
@@ -88,6 +79,23 @@ class Project{
           onComplete: () => { this.DOM.preloader.style.display = 'none' }
         }
       )
+    }
+  }
+
+  async loadMain(){
+    const { default: Main } = await import("@js/Main.js");
+    new Main({
+      boostify: this.boostify,
+      debug: this.terraDebug,
+    });
+  }
+
+  async preloadImages(){
+    if(this.DOM.images){
+      const { preloadImages } = await import("@terrahq/helpers/preloadImages");
+      await preloadImages({
+        selector: this.DOM.images,
+      });
     }
   }
 }
