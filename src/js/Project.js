@@ -37,56 +37,55 @@
 
 import gsap from 'gsap';
 class Project{
-    constructor(){
-        this.DOM = {
-            images : document.querySelectorAll("img"),
-        };
-        this.debug = true; // Set to true to enable debug mode
-      
-        this.init();
+  constructor(){
+    this.DOM = {
+      images : document.querySelectorAll("img"),
+    };
+    this.debug = true; // Set to true to enable debug mode
+    this.halfwayExecuted = false;
+    this.init();
+  }
+
+  async init(){
+    console.log("Project initialized");
+    try {
+
+      // Preload images and lotties
+      if(this.DOM.images){
+        const { preloadImages } = await import("@terrahq/helpers/preloadImages");
+        await preloadImages({
+          selector: this.DOM.images,
+        });
+      }
+
+      // Simulate another async operation
+      await new Promise(resolve => setTimeout(resolve, 2300));
     }
-    async init(){
-        console.log("Project initialized");
-        try {
-            // Preload images and lotties
+    catch (error) {
+      console.error("Error during project initialization:", error);
+    }
+    finally {
+      var tl = gsap.timeline({
+        onUpdate: async () => {
 
-            if(this.DOM.images){
-                const { preloadImages } = await import("@terrahq/helpers/preloadImages");
-                await preloadImages({
-                    selector: this.DOM.images,
-                });
-            }
-
-            
-            // Simulate another async operation
-            await new Promise(resolve => setTimeout(resolve, 2300));
-     
-        } catch (error) {
-            console.error("Error during project initialization:", error);
-        }
-        finally {
-
-            var tl = gsap.timeline({
-                onUpdate: async () => {
-                    // //* Check if the animation is at least 50% complete and the function hasn't been executed yet
-                    if (tl.progress() >= 0.5 && !this.halfwayExecuted) {
-                      this.halfwayExecuted = true;
-                      const { default: Main } = await import("@js/Main.js");
-                      new Main({
-                        boostify: this.boostify,
-                        debug: this.terraDebug,
-                      });
-          
-                    }
-                },
+          // //* Check if the animation is at least 50% complete and the function hasn't been executed yet
+          if (tl.progress() >= 0.5 && !this.halfwayExecuted) {
+            this.halfwayExecuted = true;
+            const { default: Main } = await import("@js/Main.js");
+            new Main({
+              boostify: this.boostify,
+              debug: this.terraDebug,
             });
-            tl.to('.c--preloader-a',{
-                delay:0.5,
-                opacity:0,
-                duration:0.5,
-            })
-     
-        }
+          }
+        },
+      });
+      tl.to('.c--preloader-a',{
+        delay:0.5,
+        opacity:0,
+        duration:0.5,
+      })
     }
+  }
 }
+
 export default Project;
