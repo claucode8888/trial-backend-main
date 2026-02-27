@@ -89,10 +89,7 @@ class Project{
 
   async loadMain(){
     const { default: Main } = await import("@js/Main.js");
-    new Main({
-      boostify: this.boostify,
-      debug: this.terraDebug,
-    });
+    new Main({});
   }
 
   async preloadImages(){
