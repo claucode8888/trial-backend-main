@@ -41,7 +41,7 @@ class Project{
         this.DOM = {
             images : document.querySelectorAll("img"),
         };
-        this.debug = false; // Set to true to enable debug mode
+        this.debug = true; // Set to true to enable debug mode
       
         this.init();
     }
