@@ -85,6 +85,7 @@ class Project{
           delay:0.5,
           opacity:0,
           duration:0.5,
+          onComplete: () => { this.DOM.preloader.style.display = 'none' }
         }
       )
     }
