@@ -20,20 +20,23 @@
  */
 
 import Collapsify from "@terrahq/collapsify";
+import LoadMore from "./modules/LoadMore";
 
 class Main{
-    constructor(){
-        this.init();
-        this.events()
-    }
+  constructor(){
+    this.instances = [];
+    this.init();
+    this.events()
+  }
 
-    init(){
-        //! Initialize libraries and modules here
-        new Collapsify({});
-    }
+  init(){
+    //! Initialize libraries and modules here
+    this.instances.push( new LoadMore() );
+    this.instances.push( new Collapsify({}) );
+    console.log('Main initialized with ', this.instances.length, ' modules.');
+  }
 
-    events(){
-    }
-
+  events(){}
 }
+
 export default Main;
