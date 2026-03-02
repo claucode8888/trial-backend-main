@@ -63,7 +63,7 @@ class Example {
 **Requirements:**
 1. OK - Must be a class with `export default`
 2. OK - Load items from API. One item is one c--card-a
-3. Load taxonomies into dropdown
+3. OK - Load taxonomies into dropdown
 4. Filter by taxonomy when dropdown changes
 5. Support query parameters (`?taxonomy=ID`)
 6. Add more items when clicked on Load More. If filtered, add filtered items

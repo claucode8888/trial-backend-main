@@ -5,6 +5,8 @@ class LoadMore {
       container: document.querySelector('.js--cards-container'),
       button: document.querySelector('.js--load-more'),
     };
+    this.baseUrl = 'https://www.sei.com/wp-json/wp/v2/insight';
+    this.filterId = '';
 
     this.init();
     this.events();
@@ -16,10 +18,27 @@ class LoadMore {
   }
 
   events() {
-    this.DOM.button.addEventListener('click', () => this.loadItems(true));
-    
-    this.DOM.taxonomySelect?.addEventListener('change', () => {
-    });
+    // On Click
+    this.DOM.button.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.loadItems(true);
+    }
+    );
+
+    // On Change
+    this.DOM.taxonomySelect.addEventListener('change', (e) => {
+      const selectedTaxonomy = e.target.selectedOptions[0];
+      this.filterId = selectedTaxonomy.value;
+      this.loadItems();
+    })
+  }
+
+  resolverItemsURL(){
+    let url = this.baseUrl;
+    if(this.filterId){
+      url += `?insight-types=${this.filterId}`;
+    }
+    return url;
   }
 
   async loadTaxonomies() {
@@ -70,8 +89,9 @@ class LoadMore {
   }
 
   async fetchItems(){
+    const url = this.resolverItemsURL();
     try {
-      const response = await fetch('https://www.sei.com/wp-json/wp/v2/insight');
+      const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
       return items;
@@ -92,7 +112,7 @@ class LoadMore {
     }
   }
 
-  setHTMLContent(content, add){
+  setHTMLContent(content, add = false){
     if(add){
       this.DOM.container.innerHTML += content;
       return;
