@@ -6,7 +6,7 @@ export async function POST({ request }) {
   try {
     let cardsAFirstRow = '', cardsASecondRow = '', ctaBRow = '', contentData = '';
     const maxCardsFirstRow = 4;
-    const { data = [], ctab } = await request.json();
+    const { data = [], loadMore } = await request.json();
     const container = await experimental_AstroContainer.create();
 
     // CardA Component
@@ -30,7 +30,7 @@ export async function POST({ request }) {
     }
 
     // CtaB Component
-    if(ctab){
+    if(!loadMore){
       const CtaBComponent = await container.renderToString(CtaB);
       ctaBRow = `<div class="f--col-12">${CtaBComponent}</div>`;
     }

@@ -11,16 +11,14 @@ class LoadMore {
   }
 
   async init(){
-    await this.loadItems();
+    await this.loadMainContent();
     await this.loadTaxonomies();
   }
 
   events() {
-    this.DOM.button.addEventListener('click', () => this.loadItems(false));
+    this.DOM.button.addEventListener('click', () => this.loadItems(true));
     
     this.DOM.taxonomySelect?.addEventListener('change', () => {
-      this.DOM.container.innerHTML = '';
-      this.loadItems();
     });
   }
 
@@ -36,27 +34,31 @@ class LoadMore {
     });
   }
 
-  async loadItems(ctab = true){
+  async loadMainContent(){
+    return await this.loadItems();
+  }
+
+  async loadItems(loadMore = false){
     // Fetching items
     const items = await this.fetchItems();
     if (!items) return;
 
     // Getting content to render
-    const content = await this.getContentToRender(items, ctab);
+    const content = await this.getContentToRender(items, loadMore);
     if(content){
-      this.DOM.container.innerHTML = content;
-      // this.DOM.container.innerHTML = '';
+      this.setHTMLContent(content, loadMore);
+      console.log(' Total children: ', this.DOM.container.children.length);
     }
   }
 
-  async getContentToRender(items, ctab){
+  async getContentToRender(items, loadMore){
     const response = await fetch('/api/v1/render-content',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify( 
           { data: items,
-            ctab: ctab,
+            loadMore: loadMore,
           }
         ),
       }
@@ -64,7 +66,6 @@ class LoadMore {
 
     if (!response.ok) throw new Error('Failed render content API!');
     const contentData = await response.json();
-      console.log('Click: ', ctab);
     return contentData.contentData;
   }
 
@@ -89,6 +90,14 @@ class LoadMore {
     } catch (error) {
       console.error('Taxonomy fetch error:', error);
     }
+  }
+
+  setHTMLContent(content, add){
+    if(add){
+      this.DOM.container.innerHTML += content;
+      return;
+    }
+    this.DOM.container.innerHTML = content;
   }
 }
 

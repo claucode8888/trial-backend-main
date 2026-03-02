@@ -61,8 +61,8 @@ class Example {
 - Taxonomies: `https://www.sei.com/wp-json/wp/v2/insight-types`
 
 **Requirements:**
-1. Must be a class with `export default`
-2. Load items from API. One item is one c--card-a
+1. OK - Must be a class with `export default`
+2. OK - Load items from API. One item is one c--card-a
 3. Load taxonomies into dropdown
 4. Filter by taxonomy when dropdown changes
 5. Support query parameters (`?taxonomy=ID`)
