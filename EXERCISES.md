@@ -66,7 +66,7 @@ class Example {
 3. OK - Load taxonomies into dropdown
 4. OK - Filter by taxonomy when dropdown changes
 5. OK - Support query parameters (`?taxonomy=ID`)
-6. Add more items when clicked on Load More. If filtered, add filtered items
+6. OK - Add more items when clicked on Load More. If filtered, add filtered items
 7. Show/hide "Load More" button based on item count for that criteria
 8. Robust error handling:
    - Solid timeout implementation

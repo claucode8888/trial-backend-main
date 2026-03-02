@@ -13,7 +13,6 @@ class LoadMore {
   }
 
   async init(){
-    console.log(`Taxonomy ${this.filterId}`);
     await this.loadMainContent();
     await this.loadTaxonomies();
   }
@@ -89,7 +88,7 @@ class LoadMore {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const items = await response.json();
       return items;
-
+      
     } catch (error) {
       console.error('LoadMore error:', error);
     }

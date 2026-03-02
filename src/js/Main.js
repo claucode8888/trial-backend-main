@@ -33,7 +33,6 @@ class Main{
     //! Initialize libraries and modules here
     this.instances.push( new LoadMore() );
     this.instances.push( new Collapsify({}) );
-    console.log('Main initialized with ', this.instances.length, ' modules.');
   }
 
   events(){}
