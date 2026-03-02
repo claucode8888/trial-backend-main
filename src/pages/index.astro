@@ -1,16 +1,16 @@
 ---
 import Layout from '@layouts/Layout.astro';
 import HeroA from '@components/hero/HeroA.astro';
-import CardA from '@components/cards/CardA.astro';
-import CtaB from '@components/cta/CtaB.astro';
+// import CardA from '@components/cards/CardA.astro';
+// import CtaB from '@components/cta/CtaB.astro';
 
 // temporally
-const cards = [
-    { title: "Card 1", subtitle: "Subtitle for card 1" },
-    { title: "Card 2", subtitle: "Subtitle for card 2" },
-    { title: "Card 3", subtitle: "Subtitle for card 3" },
-    { title: "Card 4", subtitle: "Subtitle for card 4" },
-];
+// const cards = [
+//     { title: "Card 1", subtitle: "Subtitle for card 1" },
+//     { title: "Card 2", subtitle: "Subtitle for card 2" },
+//     { title: "Card 3", subtitle: "Subtitle for card 3" },
+//     { title: "Card 4", subtitle: "Subtitle for card 4" },
+// ];
 ---
 
 <Layout>
@@ -69,21 +69,22 @@ const cards = [
 			</div>
 		</div>
 		<div class="f--row f--gap-c js--cards-container">
-			{cards.map((card) => (
+
+      <!-- {cards.map((card) => (
 				<div class="f--col-6">
 					<CardA title={card.title} subtitle={card.subtitle} />
 				</div>
-			))}
+			))} -->
 
-			<div class="f--col-12">
+			<!-- <div class="f--col-12">
 				<CtaB />
-			</div>
+			</div> -->
 
-			{cards.map((card) => (
+			<!-- {cards.map((card) => (
 				<div class="f--col-6">
 					<CardA title={card.title} subtitle={card.subtitle} />
 				</div>
-			))}
+			))} -->
 
 		</div>
 
