@@ -1,9 +1,9 @@
 class LoadMore {
   constructor() {
     this.DOM = {
-      button: document.querySelector('.js--load-more'),
-      container: document.querySelector('.js--cards-container'),
       taxonomySelect: document.querySelector('.js--taxonomy-select'),
+      container: document.querySelector('.js--cards-container'),
+      button: document.querySelector('.js--load-more'),
     };
 
     this.init();
@@ -42,12 +42,10 @@ class LoadMore {
     if (!items) return;
 
     // Getting content to render
-    const contentByRow = await this.getContentToRender(items, ctab);
-    if(contentByRow){
+    const content = await this.getContentToRender(items, ctab);
+    if(content){
+      this.DOM.container.innerHTML = content;
       // this.DOM.container.innerHTML = '';
-      Object.values(contentByRow).forEach((row) => {
-        this.DOM.container.innerHTML += row;
-      })
     }
   }
 

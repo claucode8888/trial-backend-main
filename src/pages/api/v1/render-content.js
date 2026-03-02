@@ -4,8 +4,8 @@ import CtaB from '@components/cta/CtaB.astro';
 
 export async function POST({ request }) {
   try {
-    let contentData = { 'cardsAFirstRow': '', 'ctaBRow': '', 'cardsASecondRow': '' };
-    const maxCardsFirstRow = 3;
+    let cardsAFirstRow = '', cardsASecondRow = '', ctaBRow = '', contentData = '';
+    const maxCardsFirstRow = 4;
     const { data = [], ctab } = await request.json();
     const container = await experimental_AstroContainer.create();
 
@@ -13,20 +13,18 @@ export async function POST({ request }) {
     if (data.length) {
       const renderPromises = data.map(item => 
         container.renderToString(CardA, {
-          props: {
-            title: item.title.rendered,
-            subtitle: item.type,
-          },
+          props: { title: item.title.rendered, subtitle: item.type },
         })
       );
       const renderedCards = await Promise.all(renderPromises);
 
+      // Setting rows content
       renderedCards.forEach((card, index) => {
         let divCol = `<div class="f--col-6">${card}</div>`;
-        if (index <= maxCardsFirstRow){
-          contentData.cardsAFirstRow += divCol;
+        if (index < maxCardsFirstRow){
+          cardsAFirstRow += divCol;
         } else {
-          contentData.cardsASecondRow += divCol;
+          cardsASecondRow += divCol;
         }
       });
     }
@@ -34,15 +32,17 @@ export async function POST({ request }) {
     // CtaB Component
     if(ctab){
       const CtaBComponent = await container.renderToString(CtaB);
-      contentData.ctaBRow = `<div class="f--col-12">${CtaBComponent}</div>`;
+      ctaBRow = `<div class="f--col-12">${CtaBComponent}</div>`;
     }
 
+    // Setting final content
+    contentData = cardsAFirstRow + ctaBRow + cardsASecondRow;
+    
     return new Response(JSON.stringify({ 'contentData': contentData }),
     {
       headers: { "Content-Type": "application/json" },
     }
   );
-
   }catch (err) {
     console.error("Full error:", err);
     return new Response(
