@@ -7,6 +7,8 @@ class LoadMore {
     };
     this.baseUrl = 'https://www.sei.com/wp-json/wp/v2/insight';
     this.filterId = this.getTaxonomyFromUrl();
+    this.currentPage = 1;
+    this.totalPages = 1;
 
     this.init();
     this.events();
@@ -21,15 +23,16 @@ class LoadMore {
     // On Click
     this.DOM.button.addEventListener('click', (e) => {
       e.preventDefault();
+      this.updateCurrentPageCounter();
       this.loadItems(true);
-    }
-    );
+    });
 
     // On Change
     this.DOM.taxonomySelect.addEventListener('change', (e) => {
       this.filterId = e.target.value;
-      this.loadItems();
       this.updateURLParam(this.filterId);
+      this.updateCurrentPageCounter(true);
+      this.loadItems();
     })
   }
 
@@ -61,6 +64,9 @@ class LoadMore {
       this.setHTMLContent(content, loadMore);
       console.log(' Total children: ', this.DOM.container.children.length);
     }
+
+    // Toggle button
+    this.toggleButton();
   }
 
   async getContentToRender(items, loadMore){
@@ -86,9 +92,13 @@ class LoadMore {
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      // Saving pagination info
+      this.updatePaginationInfo(response);
+
       const items = await response.json();
       return items;
-      
+
     } catch (error) {
       console.error('LoadMore error:', error);
     }
@@ -136,6 +146,25 @@ class LoadMore {
 
     window.history.replaceState({}, '', url);
   }
+
+  updatePaginationInfo(response){
+    if(!response?.headers) return;
+    this.totalPages = parseInt(response.headers.get('X-WP-TotalPages'));
+
+    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`);
+  }
+
+  updateCurrentPageCounter(reset){
+    this.currentPage = reset ? 1 : (this.currentPage + 1);
+  }
+
+  toggleButton(){
+    if(!this.DOM.button) return;
+    const shouldBeHidden = this.currentPage >= this.totalPages;
+    this.DOM.button.style.display = shouldBeHidden ? 'none' : 'block';
+    this.DOM.button.disabled = shouldBeHidden;
+  }
+
 }
 
 export default LoadMore;
