@@ -64,8 +64,8 @@ class Example {
 1. OK - Must be a class with `export default`
 2. OK - Load items from API. One item is one c--card-a
 3. OK - Load taxonomies into dropdown
-4. Filter by taxonomy when dropdown changes
-5. Support query parameters (`?taxonomy=ID`)
+4. OK - Filter by taxonomy when dropdown changes
+5. OK - Support query parameters (`?taxonomy=ID`)
 6. Add more items when clicked on Load More. If filtered, add filtered items
 7. Show/hide "Load More" button based on item count for that criteria
 8. Robust error handling:

@@ -6,13 +6,14 @@ class LoadMore {
       button: document.querySelector('.js--load-more'),
     };
     this.baseUrl = 'https://www.sei.com/wp-json/wp/v2/insight';
-    this.filterId = '';
+    this.filterId = this.getTaxonomyFromUrl();
 
     this.init();
     this.events();
   }
 
   async init(){
+    console.log(`Taxonomy ${this.filterId}`);
     await this.loadMainContent();
     await this.loadTaxonomies();
   }
@@ -27,18 +28,10 @@ class LoadMore {
 
     // On Change
     this.DOM.taxonomySelect.addEventListener('change', (e) => {
-      const selectedTaxonomy = e.target.selectedOptions[0];
-      this.filterId = selectedTaxonomy.value;
+      this.filterId = e.target.value;
       this.loadItems();
+      this.updateURLParam(this.filterId);
     })
-  }
-
-  resolverItemsURL(){
-    let url = this.baseUrl;
-    if(this.filterId){
-      url += `?insight-types=${this.filterId}`;
-    }
-    return url;
   }
 
   async loadTaxonomies() {
@@ -48,7 +41,8 @@ class LoadMore {
     taxonomies.forEach(taxonomy => {
       const opt = document.createElement('option');
       opt.value = taxonomy.id;
-      opt.textContent = taxonomy.name;
+      opt.textContent = taxonomy.name + ' (' + taxonomy.id + ')';
+      opt.selected = (this.filterId == taxonomy.id)
       this.DOM.taxonomySelect.appendChild(opt);
     });
   }
@@ -112,12 +106,36 @@ class LoadMore {
     }
   }
 
+  resolverItemsURL(){
+    let url = this.baseUrl;
+    if(this.filterId){
+      url += `?insight-types=${this.filterId}`;
+    }
+    return url;
+  }
+
   setHTMLContent(content, add = false){
     if(add){
       this.DOM.container.innerHTML += content;
       return;
     }
     this.DOM.container.innerHTML = content;
+  }
+
+  getTaxonomyFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('taxonomy') || '';
+  }
+
+  updateURLParam(taxonomyId){
+    const url = new URL(window.location);
+    if(taxonomyId){
+      url.searchParams.set('taxonomy', taxonomyId);
+    }else{
+      url.searchParams.delete('taxonomy');
+    }
+
+    window.history.replaceState({}, '', url);
   }
 }
 
