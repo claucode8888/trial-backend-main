@@ -9,6 +9,7 @@ class LoadMore {
     this.filterId = this.getTaxonomyFromUrl();
     this.currentPage = 1;
     this.totalPages = 1;
+    this.isLoading = false;
 
     this.init();
     this.events();
@@ -23,7 +24,6 @@ class LoadMore {
     // On Click
     this.DOM.button.addEventListener('click', (e) => {
       e.preventDefault();
-      this.updateCurrentPageCounter();
       this.loadItems(true);
     });
 
@@ -31,7 +31,6 @@ class LoadMore {
     this.DOM.taxonomySelect.addEventListener('change', (e) => {
       this.filterId = e.target.value;
       this.updateURLParam(this.filterId);
-      this.updateCurrentPageCounter(true);
       this.loadItems();
     })
   }
@@ -54,19 +53,31 @@ class LoadMore {
   }
 
   async loadItems(loadMore = false){
-    // Fetching items
-    const items = await this.fetchItems();
-    if (!items) return;
+    try {
+      // Preventing double click
+      if(this.isLoading) return;
+      this.isLoading = true;
 
-    // Getting content to render
-    const content = await this.getContentToRender(items, loadMore);
-    if(content){
+      // Updating paginator before fetching
+      this.updateCurrentPageCounter(loadMore);
+
+      // Fetching items
+      const items = await this.fetchItems();
+      if (!items) return;
+
+      // Getting content to render
+      const content = await this.getContentToRender(items, loadMore);
       this.setHTMLContent(content, loadMore);
       console.log(' Total children: ', this.DOM.container.children.length);
-    }
 
-    // Toggle button
-    this.toggleButton();
+      // Setting button
+      this.toggleButton();
+
+    }catch(error){
+      console.error(error);
+    }finally{
+      this.isLoading = false;
+    }
   }
 
   async getContentToRender(items, loadMore){
@@ -116,10 +127,11 @@ class LoadMore {
   }
 
   resolverItemsURL(){
-    let url = this.baseUrl;
+    let url = `${this.baseUrl}?page=${this.currentPage}`;
     if(this.filterId){
-      url += `?insight-types=${this.filterId}`;
+      url += `&insight-types=${this.filterId}`;
     }
+    console.log(url);
     return url;
   }
 
@@ -150,12 +162,11 @@ class LoadMore {
   updatePaginationInfo(response){
     if(!response?.headers) return;
     this.totalPages = parseInt(response.headers.get('X-WP-TotalPages'));
-
-    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`);
   }
 
-  updateCurrentPageCounter(reset){
-    this.currentPage = reset ? 1 : (this.currentPage + 1);
+  updateCurrentPageCounter(loadMore){
+    this.currentPage = loadMore ? (this.currentPage + 1) : 1;
+    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`);
   }
 
   toggleButton(){
@@ -167,4 +178,4 @@ class LoadMore {
 
 }
 
-export default LoadMore;
+export default LoadMore ;
