@@ -4,7 +4,6 @@ import CtaB from '@components/cta/CtaB.astro';
 
 export async function POST({ request }) {
   let body;
-
   // 1. Handle Json
   try {
     body = await request.json();

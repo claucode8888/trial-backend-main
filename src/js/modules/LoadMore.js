@@ -67,42 +67,50 @@ class LoadMore {
 
       // Getting content to render
       const content = await this.getContentToRender(items, loadMore);
+      if (!content) return;
+
+      // Setting content
       this.setHTMLContent(content, loadMore);
       console.log(' Total children: ', this.DOM.container.children.length);
 
-      // Setting button
+      // Show/Hide button
       this.toggleButton();
 
     }catch(error){
-      console.error(error);
+      this.handleError(error);
     }finally{
       this.isLoading = false;
     }
   }
 
   async getContentToRender(items, loadMore){
-    const response = await fetch('/api/v1/render-content',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( 
-          { data: items,
-            loadMore: loadMore,
-          }
-        ),
-      }
-    );
+    try {
+      const response = await fetch('/api/v1/render-content',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            { data: items,
+              loadMore: loadMore,
+            }
+          ),
+        }
+      );
 
-    if (!response.ok) throw new Error('Failed render content API!');
-    const contentData = await response.json();
-    return contentData.contentData;
+      if (!response.ok) throw new Error(`Render content API failed ${response.status}`);
+      const contentData = await response.json();
+      return contentData.contentData;
+
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   async fetchItems(){
     const url = this.resolverItemsURL();
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`Items fetch error HTTP ${response.status}`);
 
       // Saving pagination info
       this.updatePaginationInfo(response);
@@ -110,19 +118,19 @@ class LoadMore {
       const items = await response.json();
       return items;
 
-    } catch (error) {
-      console.error('LoadMore error:', error);
+    } catch (error){
+      this.handleError(error);
     }
   }
 
   async fetchTaxonomies(){
     try {
       const response = await fetch('https://www.sei.com/wp-json/wp/v2/insight-types');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`Taxonomies fetch error. HTTP ${response.status}`);
       const taxonomies = await response.json();
       return taxonomies;
     } catch (error) {
-      console.error('Taxonomy fetch error:', error);
+      this.handleError(error);
     }
   }
 
@@ -176,6 +184,29 @@ class LoadMore {
     this.DOM.button.disabled = shouldBeHidden;
   }
 
+  handleError(error, userMessage = 'Something went wrong') {
+    console.error(error);
+    const message = error?.message || userMessage;
+
+    const existing = document.querySelector('.error-message');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.className = 'error-message';
+    div.textContent = message;
+    div.classList = 'f--col-12';
+    div.style.cssText = `
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+    `;
+    this.DOM.container.prepend(div);
+    setTimeout(() => div.remove(), 5000);
+  }
 }
 
 export default LoadMore ;
