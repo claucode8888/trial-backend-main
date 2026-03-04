@@ -63,7 +63,11 @@ class LoadMore {
 
       // Fetching items
       const items = await this.fetchItems();
-      if (!items) return;
+      if (!items){
+        // Revert paginator
+        this.updateCurrentPageCounter(false, true);
+        return;
+      };
 
       // Getting content to render
       const content = await this.getContentToRender(items, loadMore);
@@ -71,12 +75,13 @@ class LoadMore {
 
       // Setting content
       this.setHTMLContent(content, loadMore);
-      console.log(' Total children: ', this.DOM.container.children.length);
+      console.log('Total elements in container: ', this.DOM.container.children.length);
 
       // Show/Hide button
       this.toggleButton();
 
     }catch(error){
+      this.updateCurrentPageCounter(false, true);
       this.handleError(error);
     }finally{
       this.isLoading = false;
@@ -84,54 +89,40 @@ class LoadMore {
   }
 
   async getContentToRender(items, loadMore){
-    try {
-      const response = await fetch('/api/v1/render-content',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(
-            { data: items,
-              loadMore: loadMore,
-            }
-          ),
+    let options = 
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        { data: items,
+          loadMore: loadMore,
         }
-      );
-
-      if (!response.ok) throw new Error(`Render content API failed ${response.status}`);
-      const contentData = await response.json();
-      return contentData.contentData;
-
-    } catch (error) {
-      this.handleError(error);
-    }
+      ),
+    };
+    const response = await this.request('/api/v1/render-content', options);
+    const contentData = await response.json();
+    return contentData.contentData;
   }
 
   async fetchItems(){
     const url = this.resolverItemsURL();
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Items fetch error HTTP ${response.status}`);
+    const response = await this.request(url);
 
-      // Saving pagination info
-      this.updatePaginationInfo(response);
+    // Saving pagination info
+    this.updatePaginationInfo(response);
 
-      const items = await response.json();
-      return items;
+    // Temporally debugging 
+    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`)
+    console.log(url);
 
-    } catch (error){
-      this.handleError(error);
-    }
+    const items = await response.json();
+    return items;
   }
 
   async fetchTaxonomies(){
-    try {
-      const response = await fetch('https://www.sei.com/wp-json/wp/v2/insight-types');
-      if (!response.ok) throw new Error(`Taxonomies fetch error. HTTP ${response.status}`);
-      const taxonomies = await response.json();
-      return taxonomies;
-    } catch (error) {
-      this.handleError(error);
-    }
+    const response = await this.request('https://www.sei.com/wp-json/wp/v2/insight-types');
+    const taxonomies = await response.json();
+    return taxonomies;
   }
 
   resolverItemsURL(){
@@ -139,7 +130,6 @@ class LoadMore {
     if(this.filterId){
       url += `&insight-types=${this.filterId}`;
     }
-    console.log(url);
     return url;
   }
 
@@ -172,21 +162,28 @@ class LoadMore {
     this.totalPages = parseInt(response.headers.get('X-WP-TotalPages'));
   }
 
-  updateCurrentPageCounter(loadMore){
+  updateCurrentPageCounter(loadMore, revert = false){
     this.currentPage = loadMore ? (this.currentPage + 1) : 1;
-    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`);
+
+    if(revert && this.currentPage > 1){
+      this.currentPage = this.currentPage - 1;
+    }
   }
 
   toggleButton(){
     if(!this.DOM.button) return;
     const shouldBeHidden = this.currentPage >= this.totalPages;
-    this.DOM.button.style.display = shouldBeHidden ? 'none' : 'block';
+    this.DOM.button.style.display = shouldBeHidden ? 'none' : 'inline';
     this.DOM.button.disabled = shouldBeHidden;
   }
 
   handleError(error, userMessage = 'Something went wrong') {
     console.error(error);
-    const message = error?.message || userMessage;
+    let message = error?.message || userMessage;
+
+    if(error?.status){
+      message += ` (${error?.status})`;
+    }
 
     const existing = document.querySelector('.error-message');
     if (existing) existing.remove();
@@ -205,7 +202,49 @@ class LoadMore {
       text-align: center;
     `;
     this.DOM.container.prepend(div);
-    setTimeout(() => div.remove(), 5000);
+    setTimeout(() => div.remove(), 6000);
+  }
+
+  buildHttpError(response) {
+    const status = response.status;
+    let message = 'Unexpected error occurred';
+
+    if (status >= 400 && status < 500) {
+      message = 'Invalid request. Please refresh the page.';
+    }
+
+    if (status >= 500) {
+      message = 'Server error. Please try again later.';
+    }
+
+    const error = new Error(message);
+    error.status = status;
+    return error;
+  }
+
+  async request(url, options = {}, timeout = 8000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw this.buildHttpError(response);
+      return response;
+
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        const timeoutError = new Error('Request timeout. Please try again.');
+        timeoutError.status = 408;
+        throw timeoutError;
+      }
+      throw error;
+    }
   }
 }
 

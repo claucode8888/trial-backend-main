@@ -68,7 +68,7 @@ class Example {
 5. OK - Support query parameters (`?taxonomy=ID`)
 6. OK - Add more items when clicked on Load More. If filtered, add filtered items
 7. OK - Show/hide "Load More" button based on item count for that criteria
-8. Robust error handling:
+8. OK - Robust error handling:
    - Solid timeout implementation
    - HTTP errors (4xx/5xx) with user-friendly messages in UI and technical logs in console
 
