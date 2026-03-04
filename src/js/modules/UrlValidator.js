@@ -32,14 +32,20 @@ class UrlValidator {
   async validateUrl(){
     const url = this.getEnteredInput();
     if(!this.isValidUrl(url)){
-      alert('Invalid url');
+      this.invalidUrlFeedback();
       return;
     }
 
     // Making the resquest
-    const response = await makeRequest(url);
+    const response = await this.makeRequest(url);
 
     // Displaying results
+    this.displayReponseResults(response);
+  }
+
+  displayReponseResults(response){
+    if(!this.DOM.result) return;
+    this.DOM.result.innerHTML = JSON.stringify(response);
   }
 
   async makeRequest(url){
@@ -51,11 +57,19 @@ class UrlValidator {
     };
 
     try {
+      // Double click prevention up
+      if(this.isLoading) return;
+      this.preventDoubleClick(true);
+
       const response = await fetch('/api/check-url', options);
       const jsonResponse = await response.json();
-      console.log(jsonResponse);
+      return jsonResponse;
+
     } catch (error) {
-      console.log(error, error?.message);
+      console.log(error);
+    }finally{
+      // Double click prevention down
+      this.preventDoubleClick(false);
     }
   }
 
@@ -66,6 +80,25 @@ class UrlValidator {
     return trimmedValue;
   }
 
+  // Helpers 
+
+  preventDoubleClick(boolValue){
+    this.setIsLoading(boolValue);
+    this.disableButton(boolValue);
+  }
+
+  setIsLoading(boolValue){
+    this.isLoading = boolValue;
+  }
+  
+  disableButton(disabledValue){
+    const submit = this.DOM.submit;
+    if(!submit) return;
+    submit.disabled = disabledValue;
+    submit.style.cursor = disabledValue ? 'not-allowed' : 'pointer';
+    submit.textContent = disabledValue ? 'Checking...' : 'Check URL';
+  }
+
   isValidUrl(str){
     try {
       const url = new URL(str);
@@ -74,6 +107,11 @@ class UrlValidator {
       return false;
     }
   }
+
+  invalidUrlFeedback(){
+    setTimeout( () => alert('Url no valid.'), 1000 );
+  }
+
 }
 
 export default UrlValidator;
