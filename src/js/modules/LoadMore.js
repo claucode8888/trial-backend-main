@@ -57,32 +57,26 @@ class LoadMore {
       // Preventing double click
       if(this.isLoading) return;
       this.setIsLoading(true);
+      this.disableButton(true);
 
       // Updating paginator before fetching
       this.updateCurrentPageCounter(loadMore);
 
       // Fetching items
       const items = await this.fetchItems();
-      if (!items){
-        // Revert paginator
-        this.updateCurrentPageCounter(false, true);
-        return;
-      };
-
+      
       // Getting content to render
       const content = await this.getContentToRender(items);
 
       // Setting content
       this.setHTMLContent(content, loadMore);
 
-      // Show/Hide button
-      this.toggleButton();
-
     }catch(error){
       this.updateCurrentPageCounter(false, true);
       this.handleError(error);
     }finally{
       this.setIsLoading(false);
+      this.toggleButton();
     }
   }
 
@@ -173,7 +167,8 @@ class LoadMore {
     if(!this.DOM.button) return;
     const shouldBeHidden = this.currentPage >= this.totalPages;
     this.DOM.button.style.display = shouldBeHidden ? 'none' : 'inline';
-    this.DOM.button.disabled = shouldBeHidden;
+    const disable = shouldBeHidden || this.isLoading;
+    this.disableButton(disable);
   }
 
   handleError(error, userMessage = 'Something went wrong') {
@@ -248,6 +243,10 @@ class LoadMore {
 
   setIsLoading(boolValue){
     this.isLoading = boolValue;
+  }
+  
+  disableButton(disabledValue){
+    this.DOM.button.disabled = disabledValue;
   }
 }
 
