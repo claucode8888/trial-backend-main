@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Bilbao",
+			"country": {
+				"code": "ES",
+				"name": "Spain"
+			},
+			"subdivision": {
+				"code": "PV",
+				"name": "Basque Country"
+			},
+			"timezone": "Europe/Madrid",
+			"latitude": 43.263,
+			"longitude": -2.9351,
+			"postalCode": "48012"
+		},
+		"timestamp": 1772635848246
+	}
+}
