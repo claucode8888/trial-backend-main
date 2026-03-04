@@ -58,11 +58,11 @@ export async function POST({ request }) {
     });
 
     // CtaB Component
-    if(!body.loadMore){
+    if(body.data.length > maxCardsFirstRow && body.currentPage === 1){
       const CtaBComponent = await container.renderToString(CtaB);
       ctaBRow = `<div class="f--col-12">${CtaBComponent}</div>`;
     }
-
+    
     // Setting final content
     contentData = cardsAFirstRow + ctaBRow + cardsASecondRow;
     

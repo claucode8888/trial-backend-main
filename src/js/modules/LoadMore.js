@@ -70,12 +70,10 @@ class LoadMore {
       };
 
       // Getting content to render
-      const content = await this.getContentToRender(items, loadMore);
-      if (!content) return;
+      const content = await this.getContentToRender(items);
 
       // Setting content
       this.setHTMLContent(content, loadMore);
-      console.log('Total elements in container: ', this.DOM.container.children.length);
 
       // Show/Hide button
       this.toggleButton();
@@ -88,14 +86,14 @@ class LoadMore {
     }
   }
 
-  async getContentToRender(items, loadMore){
+  async getContentToRender(items){
     let options = 
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         { data: items,
-          loadMore: loadMore,
+          currentPage: this.currentPage,
         }
       ),
     };
@@ -112,7 +110,7 @@ class LoadMore {
     this.updatePaginationInfo(response);
 
     // Temporally debugging 
-    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`)
+    console.log(`Current page: ${this.currentPage} | Total pages: ${this.totalPages}`);
     console.log(url);
 
     const items = await response.json();
@@ -139,6 +137,7 @@ class LoadMore {
       return;
     }
     this.DOM.container.innerHTML = content;
+    console.log(`Total elements in container: ${this.DOM.container.children.length}`);
   }
 
   getTaxonomyFromUrl() {
