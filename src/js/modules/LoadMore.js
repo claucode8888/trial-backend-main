@@ -56,7 +56,7 @@ class LoadMore {
     try {
       // Preventing double click
       if(this.isLoading) return;
-      this.isLoading = true;
+      this.setIsLoading(true);
 
       // Updating paginator before fetching
       this.updateCurrentPageCounter(loadMore);
@@ -82,7 +82,7 @@ class LoadMore {
       this.updateCurrentPageCounter(false, true);
       this.handleError(error);
     }finally{
-      this.isLoading = false;
+      this.setIsLoading(false);
     }
   }
 
@@ -244,6 +244,10 @@ class LoadMore {
       }
       throw error;
     }
+  }
+
+  setIsLoading(boolValue){
+    this.isLoading = boolValue;
   }
 }
 
