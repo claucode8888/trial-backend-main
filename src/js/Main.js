@@ -21,6 +21,7 @@
 
 import Collapsify from "@terrahq/collapsify";
 import LoadMore from "./modules/LoadMore";
+import UrlValidator from "./modules/UrlValidator";
 
 class Main{
   constructor(){
@@ -32,6 +33,7 @@ class Main{
   init(){
     //! Initialize libraries and modules here
     this.instances.push( new LoadMore() );
+    this.instances.push( new UrlValidator() );
     this.instances.push( new Collapsify({}) );
   }
 
