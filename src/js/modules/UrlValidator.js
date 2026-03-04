@@ -29,9 +29,33 @@ class UrlValidator {
     
   }
 
-  validateUrl(){
-    const enteredData = this.getEnteredInput();
-    if(this.isValidUrl(enteredData)){
+  async validateUrl(){
+    const url = this.getEnteredInput();
+    if(!this.isValidUrl(url)){
+      alert('Invalid url');
+      return;
+    }
+
+    // Making the resquest
+    const response = await makeRequest(url);
+
+    // Displaying results
+  }
+
+  async makeRequest(url){
+    const options =
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify( { url } ),
+    };
+
+    try {
+      const response = await fetch('/api/check-url', options);
+      const jsonResponse = await response.json();
+      console.log(jsonResponse);
+    } catch (error) {
+      console.log(error, error?.message);
     }
   }
 
