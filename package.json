@@ -14,5 +14,8 @@
     "astro": "^5.16.15",
     "gsap": "^3.14.2",
     "sass": "^1.97.3"
+  },
+  "devDependencies": {
+    "@astrojs/netlify": "^6.6.4"
   }
 }
