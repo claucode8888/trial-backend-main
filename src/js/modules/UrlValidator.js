@@ -3,7 +3,7 @@ class UrlValidator {
     this.DOM = {
       input: document.querySelector('.js--url-input'),
       submit: document.querySelector('.js--url-submit'),
-      result: document.querySelector('.js--url-result'),
+      resultsContainer: document.querySelector('.js--url-result'),
     };
     this.isLoading = false;
     
@@ -36,19 +36,24 @@ class UrlValidator {
       return;
     }
 
-    // Making the resquest
-    const response = await this.makeRequest(url);
+    try {
+      // Double click prevention up
+      if(this.isLoading) return;
+      this.preventDoubleClick(true);
 
-    // Displaying results
-    this.displayReponseResults(response);
+      const checkedResults = await this.checkUrl(url);
+
+      // Renderize 
+      this.renderResults(checkedResults);
+
+    } catch (error) {
+      this.handleError(error);
+    }finally{
+      this.preventDoubleClick(false);
+    }
   }
 
-  displayReponseResults(response){
-    if(!this.DOM.result) return;
-    this.DOM.result.innerHTML = JSON.stringify(response);
-  }
-
-  async makeRequest(url){
+  async checkUrl(url){
     const options =
     {
       method: 'POST',
@@ -56,21 +61,26 @@ class UrlValidator {
       body: JSON.stringify( { url } ),
     };
 
-    try {
-      // Double click prevention up
-      if(this.isLoading) return;
-      this.preventDoubleClick(true);
-
-      const response = await fetch('/api/check-url', options);
-      const jsonResponse = await response.json();
-      return jsonResponse;
-
-    } catch (error) {
-      console.log(error);
-    }finally{
-      // Double click prevention down
-      this.preventDoubleClick(false);
-    }
+    const response = await this.request('/api/check-url', options);
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  }
+  
+  renderResults(results){
+    const resultsContainer = this.DOM.resultsContainer;
+    if(!resultsContainer) return;
+    resultsContainer.style.cssText = 
+      `
+        color: #D68A2B; 
+        background: #0F0C08; 
+        border: 2px solid #0F0C08; 
+        border-radius: .6em; 
+        padding: 2em 4em; 
+        font-size: 16px;
+        margin: 10em;
+        overflow: auto;
+      `;
+    resultsContainer.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
   }
 
   getEnteredInput(){
@@ -101,7 +111,7 @@ class UrlValidator {
 
   isValidUrl(str){
     try {
-      const url = new URL(str);
+      new URL(str);
       return true;
     }catch{
       return false;
@@ -112,6 +122,78 @@ class UrlValidator {
     setTimeout( () => alert('Url no valid.'), 1000 );
   }
 
+
+  // HTTP and UI error methods
+
+  handleError(error, userMessage = 'Something went wrong') {
+    console.error(error);
+    let message = error?.message || userMessage;
+
+    if(error?.status){
+      message += ` (${error?.status})`;
+    }
+
+    const existing = document.querySelector('.error-message');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.className = 'error-message';
+    div.textContent = message;
+    div.classList = 'f--col-12';
+    div.style.cssText = `
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+    `;
+    this.DOM.resultsContainer.prepend(div);
+    setTimeout(() => div.remove(), 6000);
+  }
+
+  buildHttpError(response) {
+    const status = response.status;
+    let message = 'Unexpected error occurred';
+
+    if (status >= 400 && status < 500) {
+      message = 'Invalid request. Please refresh the page.';
+    }
+
+    if (status >= 500) {
+      message = 'Server error. Please try again later.';
+    }
+
+    const error = new Error(message);
+    error.status = status;
+    return error;
+  }
+
+  async request(url, options = {}, timeout = 8000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw this.buildHttpError(response);
+      return response;
+
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        const timeoutError = new Error('Request timeout. Please try again.');
+        timeoutError.status = 408;
+        throw timeoutError;
+      }
+      throw error;
+    }
+  }
 }
 
 export default UrlValidator;
