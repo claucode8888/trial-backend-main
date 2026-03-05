@@ -78,9 +78,10 @@ class UrlValidator {
         padding: 2em 4em; 
         font-size: 16px;
         margin: 10em;
-        overflow: auto;
       `;
-    resultsContainer.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
+      console.log(results);
+    resultsContainer.innerHTML = `${JSON.stringify(results, null, 2)}`;
+      // resultsContainer.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
   }
 
   getEnteredInput(){
