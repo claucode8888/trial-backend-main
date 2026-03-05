@@ -31,6 +31,8 @@ class UrlValidator {
 
   async validateUrl(){
     const url = this.getEnteredInput();
+    if(url === '') return;
+
     if(!this.isValidUrl(url)){
       this.invalidUrlFeedback();
       return;
