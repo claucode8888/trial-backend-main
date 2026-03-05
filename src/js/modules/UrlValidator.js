@@ -45,7 +45,7 @@ class UrlValidator {
 
       const checkedResults = await this.checkUrl(url);
 
-      // Renderize 
+      // Renderize
       this.renderResults(checkedResults);
 
     } catch (error) {
@@ -66,24 +66,6 @@ class UrlValidator {
     const response = await this.request('/api/check-url', options);
     const jsonResponse = await response.json();
     return jsonResponse;
-  }
-  
-  renderResults(results){
-    const resultsContainer = this.DOM.resultsContainer;
-    if(!resultsContainer) return;
-    resultsContainer.style.cssText = 
-      `
-        color: #D68A2B; 
-        background: #0F0C08; 
-        border: 2px solid #0F0C08; 
-        border-radius: .6em; 
-        padding: 2em 4em; 
-        font-size: 16px;
-        margin: 10em;
-      `;
-      console.log(results);
-    resultsContainer.innerHTML = `${JSON.stringify(results, null, 2)}`;
-      // resultsContainer.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
   }
 
   getEnteredInput(){
@@ -197,6 +179,69 @@ class UrlValidator {
       throw error;
     }
   }
+  
+  getColor(status){
+    if (status === 200) return 'green';
+    if (status === 301) return 'blue';
+    if (status === 302) return 'orange';
+    if (status >= 400) return 'red';
+    return 'gray';
+  };
+
+  renderResults(datas){
+    if(!datas) return;
+
+    const data = datas.result
+    // Main description
+    let html = `<p>
+      <strong>URL: ${data.inputUrl} </strong>
+      (
+        <span style="color: orange; font-size: 14px;">Redirections: ${data.redirectCount}</span> 
+        <span style="color: orange; font-size: 14px;">MaxReached: ${data.maxHopsReached ? 'yes' : 'no'}</span>
+        <span style="color: orange; font-size: 14px;">Loop: ${data.redirectLoopDetected ? 'yes' : 'no'}</span>
+      )
+      </p>`;
+
+    html += '</br>'
+
+    // Hops
+    html += `<ul>`;
+    data.chain.forEach(hop => {
+      html += `<li style="color:${this.getColor(hop.status)};">`;
+      html += `#${hop.hop} ${hop.url} | Status code: <${hop.status}> | ${hop.statusText} `;
+
+      if(hop.redirectTo){
+        html += `<li style="color:${this.getColor(hop.status)};"> => ${hop.redirectTo}<li>`;
+      }
+
+      // Headers
+      if(hop.headers){
+        html += `<ul style="color:${this.getColor(hop.status)};">`;
+          html += '</br>'
+          html += `<p>Headers</p>`;
+          html += '</br>'
+          Object.entries(hop.headers).forEach(head => {
+            html += `<li>${head}<li>`;
+          });
+        html += `<ul>`;
+      }
+      html += `</li>`;
+      html += '</br>'
+    });
+    html += `</ul>`;
+
+    // Final description
+    html += `
+    <p><strong>Final:</strong> ${data.final?.url || '-'}
+      <span style="color:${this.getColor(data.final?.status)};">
+        (${data.final?.status})
+      </span>
+    </p>`;
+    html += '</br>'
+
+    this.DOM.resultsContainer.innerHTML = html;
+  }
+
 }
 
 export default UrlValidator;
